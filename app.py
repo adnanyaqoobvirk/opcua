@@ -1,6 +1,5 @@
 import time
 
-
 from opcua import ua, Server
 
 
@@ -10,11 +9,16 @@ if __name__ == "__main__":
     server = Server()
     server.set_endpoint("opc.tcp://0.0.0.0:8080/freeopcua/server/")
 
+    # load server certificate and private key. This enables endpoints
+    # with signing and encryption.
+    server.load_certificate("my_cert.der")
+    server.load_private_key("my_private_key.pem")
+
     # setup our own namespace, not really necessary but should as spec
-    uri = "http://examples.freeopcua.github.io"
+    uri = "http://opcua-myproject.192.168.99.100.nip.io"
     idx = server.register_namespace(uri)
 
-    # get Objects node, this is where we should put our nodes
+    # get Objects node, this is where we should put our custom stuff
     objects = server.get_objects_node()
 
     # populating our address space
@@ -24,7 +28,6 @@ if __name__ == "__main__":
 
     # starting!
     server.start()
-    
     try:
         count = 0
         while True:
@@ -34,3 +37,4 @@ if __name__ == "__main__":
     finally:
         #close connection, remove subcsriptions, etc
         server.stop()
+
